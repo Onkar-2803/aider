@@ -4,6 +4,8 @@ import random
 import sys
 from collections import Counter, defaultdict, namedtuple
 from pathlib import Path
+import tiktoken
+
 
 import networkx as nx
 import pkg_resources
@@ -15,9 +17,9 @@ from pygments.util import ClassNotFound
 from tqdm import tqdm
 from tree_sitter_languages import get_language, get_parser
 
-from aider import models
+# from aider import models
 
-from .dump import dump  # noqa: F402
+# from .dump import dump  # noqa: F402
 
 Tag = namedtuple("Tag", "rel_fname fname line name kind".split())
 
@@ -34,7 +36,7 @@ class RepoMap:
         self,
         map_tokens=1024,
         root=None,
-        main_model=models.Model.strong_model(),
+        main_model="gpt-4",
         io=None,
         repo_content_prefix=None,
         verbose=False,
@@ -50,7 +52,8 @@ class RepoMap:
 
         self.max_map_tokens = map_tokens
 
-        self.tokenizer = main_model.tokenizer
+        # self.tokenizer = main_model.tokenizer
+        self.tokenizer = tiktoken.encoding_for_model(main_model)
         self.repo_content_prefix = repo_content_prefix
 
     def get_repo_map(self, chat_files, other_files):

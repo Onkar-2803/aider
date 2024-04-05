@@ -13,7 +13,7 @@ from aider.utils import IgnorantTemporaryDirectory
 
 if __name__ == "__main__":
   print("Run start")
-  test_file_ts = "test_file.ts"
+  test_file_ts = "test_file.py"
   temp_dir = "/Users/onkar/Documents/Code/aider/aider/test_files/"
   other_files = [os.path.join(temp_dir, test_file_ts)]
   io = InputOutput()
