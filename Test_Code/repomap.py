@@ -2,8 +2,6 @@ import os
 from collections import Counter, defaultdict, namedtuple
 from pathlib import Path
 import tiktoken
-
-
 import networkx as nx
 import pkg_resources
 from grep_ast import TreeContext, filename_to_lang
@@ -22,14 +20,9 @@ class RepoMap:
         self,
         root=None,
         main_model="gpt-4",
-        repo_content_prefix=None,
-        verbose=False,
     ):
-        self.verbose = verbose
         self.root = root
         self.tokenizer = tiktoken.encoding_for_model(main_model)
-        self.repo_content_prefix = repo_content_prefix
-        # print('init called')
 
     def read_text_in(self, fname):
         with open(str(fname), "r", encoding="utf-8") as f:
@@ -37,9 +30,7 @@ class RepoMap:
 
     def get_repo_map(self, other_files):
         
-        # print('other_files', other_files)
         ranked_tags = self.get_ranked_tags(other_files)
-        # print('ranked_tags', ranked_tags)
         repo_content = self.to_tree(ranked_tags)
 
         return repo_content
@@ -55,7 +46,6 @@ class RepoMap:
 
         language = get_language(lang)
         parser = get_parser(lang)
-        # print(language, parser)
 
         # Load the tags queries
         try:
@@ -66,7 +56,6 @@ class RepoMap:
             return
         query_scm = Path(scm_fname)
         if not query_scm.exists():
-            print('F in chat')
             return
         
         query_scm = query_scm.read_text()
@@ -135,16 +124,11 @@ class RepoMap:
         definitions = defaultdict(set)
 
         personalization = dict()
-
-        fnames = set(other_fnames)
-        chat_rel_fnames = set()
-        fnames = tqdm(fnames)
+        fnames = tqdm(other_fnames)
 
         for fname in fnames:
             rel_fname = self.get_rel_fname(fname)     #Gets name of file
-            # print('rel_fname', rel_fname)
             tags = list(self.get_tags_raw(fname, rel_fname))
-            # print('tags', tags)
 
             for tag in tags:
                 if tag.kind == "def":
@@ -198,12 +182,8 @@ class RepoMap:
         ranked_tags = []
         ranked_definitions = sorted(ranked_definitions.items(), reverse=True, key=lambda x: x[1])
 
-        # dump(ranked_definitions)
 
         for (fname, ident), rank in ranked_definitions:
-            # print(f"{rank:.03f} {fname} {ident}")
-            if fname in chat_rel_fnames:
-                continue
             ranked_tags += list(definitions.get((fname, ident), []))
 
         rel_other_fnames_without_tags = set(self.get_rel_fname(fname) for fname in other_fnames)

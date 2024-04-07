@@ -1,0 +1,7 @@
+tiktoken==0.5.2
+networkx==3.2.1
+pygments==2.17.2
+tqdm==4.66.
+grep-ast==0.2.4
+numpy==1.26.3
+scipy==1.11.4
